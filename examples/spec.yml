@@ -1,0 +1,40 @@
+target:
+  source: "pl011.c"
+
+variables:
+  state: &state
+    type: "struct PL011State"
+    name: "state"
+    pass-by-pointer: true
+  offset: &offset
+    type: "hwaddr"
+    name: "offset"
+  size: &size
+    type: "unsigned"
+    name: "size"
+  value: &value
+    type: "uint64_t"
+    name: "value"
+
+constraints:
+  - name: "state.fbrd"
+    constraint:
+      - "<= 0x3f"
+  - name: "state.ibrd"
+    constraint:
+      - "<= 0xffff"
+  - name: "state.read_pos"
+    constraint:
+      - ">= 0"
+      - "<= 15"
+
+assignments:
+  - name: "state.id"
+    value: "pl011_id_arm"
+
+entrypoint:
+  - name: "pl011_read"
+    args: [*state, *offset, *size]
+  - name: "pl011_write"
+    args: [*state, *offset, *value, *size]
+
