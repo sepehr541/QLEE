@@ -64,7 +64,7 @@ class TargetConfig:
     variables: Dict[str, Variable] = field(default_factory=dict)
     constraints: Dict[str, Dict[str, Constraint]] = field(default_factory=dict)
     assignments: Dict[str, Assignment] = field(default_factory=dict)
-    entrypoint: List[Entrypoint] = field(default_factory=list)
+    entrypoints: List[Entrypoint] = field(default_factory=list)
 
     @classmethod
     def from_yaml(cls, data) -> 'TargetConfig':
@@ -86,5 +86,5 @@ class TargetConfig:
             variables=variables,
             constraints=constraints,
             assignments=assignments,
-            entrypoint=entrypoints
+            entrypoints=entrypoints
         )

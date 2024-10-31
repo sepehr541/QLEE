@@ -7,7 +7,7 @@ def generate_main_per_entrypoint(config, output):
         fprint("void klee_make_symbolic(void *addr, size_t nbytes, const char *name);")
         fprint("void klee_assume(uintptr_t condition);")
 
-        for entrypoint in config.entrypoint:
+        for entrypoint in config.entrypoints:
             fprint("__attribute__((used))")
             fprint(f"static int main_{entrypoint.name}(void)")
             fprint("{")

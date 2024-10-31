@@ -2,11 +2,13 @@ import yaml
 import argparse
 import os
 from pathlib import Path
+from datetime import datetime
 
 from common.spec import *
 from ops.harness import add_harness
-from ops.compile import compile
+from ops.compile import compile_to_ir
 from ops.klee import run_klee
+from common.compilecommands import get_entry
 
 def parse_args():
     parser = argparse.ArgumentParser(description="QLEE: wrapper for running KLEE on QEMU source files")
@@ -16,8 +18,8 @@ def parse_args():
     parser.add_argument("--compile-commands", type=Path, default="build/compile_commands.json", help="Path to compile_commands.jsonrelative to --qemu-root")
     parser.add_argument("-t", "--stubs-path", type=Path, required=True, help="Path to the stubs LLVM IR file")
     parser.add_argument("-o", "--klee-output-dir", type=Path, default="./output", help="Path to the KLEE's output directory")
-    
-    
+
+
 
     parser.add_argument("-a", "--all", action="store_true", help="Execute all steps")
     parser.add_argument("-H", "--add-harness", action="store_true", help="Add harness")
@@ -37,33 +39,39 @@ def check_dir(dir_path):
 def main():
     args = parse_args()
     spec_path, qemu_root = args.spec_path, args.qemu_root
-    
+    compile_commands, stubs = qemu_root / args.compile_commands, args.stubs_path
+
     check_file(spec_path)
     check_dir(qemu_root)
+    check_file(compile_commands)
+    check_file(stubs)
+
+    spec_parsed = TargetConfig.from_yaml(yaml.safe_load(open(spec_path)))
+
+    source = qemu_root / spec_parsed.source
+    check_file(source)
+
+    entry = get_entry(compile_commands, source)
 
     do_add_harness = args.all or args.add_harness
     do_compile = args.all or args.compile
     do_run_klee = args.all or args.run_klee
-    
-    spec_yaml = yaml.safe_load(open(spec_path))
-    spec_parsed = TargetConfig.from_yaml(spec_yaml)
 
-    source, compile_commands = qemu_root / spec_parsed.source, qemu_root / args.compile_commands
-    check_file(source)
-    
     if do_add_harness:
         print("Adding harness...")
         add_harness(spec_parsed, source)
 
     if do_compile:
         print("Compiling the code...")
-        check_file(compile_commands)
-        compile(compile_commands, source)
-        
+        compile_to_ir(entry)
+
     if do_run_klee:
-        
-        print("TODO: Run KLEE...")
-        
+        print("Run KLEE...")
+        ir_path = entry.directory / entry.output
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        output_dir = Path(f"{args.klee_output_dir}/{timestamp}")
+        output_dir.mkdir(parents=True, exist_ok=True)
+        run_klee(spec_parsed, ir_path, stubs, output_dir)
 
 
 if __name__ == "__main__":
