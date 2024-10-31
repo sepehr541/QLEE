@@ -3,21 +3,26 @@ import argparse
 import os
 from pathlib import Path
 
-from spec import *
-from harness import add_harness
-from compile import compile
+from common.spec import *
+from ops.harness import add_harness
+from ops.compile import compile
+from ops.klee import run_klee
 
 def parse_args():
     parser = argparse.ArgumentParser(description="QLEE: wrapper for running KLEE on QEMU source files")
 
-    parser.add_argument("-s", "--spec-path", type=Path, required=True, help="Path to the specfile")
-    parser.add_argument("--qemu-root", type=Path, default=".", help="Path to the QEMU root directory file")
-    parser.add_argument("--compile-commands", type=Path, default="build/compile_commands.json", help="Path to compile_commands.jsonrelative to --qemu-root") 
+    parser.add_argument("-s", "--spec-path", type=Path, required=True, help="Path to the spec file")
+    parser.add_argument("-r", "--qemu-root", type=Path, default=".", help="Path to the QEMU root directory file")
+    parser.add_argument("--compile-commands", type=Path, default="build/compile_commands.json", help="Path to compile_commands.jsonrelative to --qemu-root")
+    parser.add_argument("-t", "--stubs-path", type=Path, required=True, help="Path to the stubs LLVM IR file")
+    parser.add_argument("-o", "--klee-output-dir", type=Path, default="./output", help="Path to the KLEE's output directory")
+    
+    
 
     parser.add_argument("-a", "--all", action="store_true", help="Execute all steps")
     parser.add_argument("-H", "--add-harness", action="store_true", help="Add harness")
     parser.add_argument("-c", "--compile", action="store_true", help="Compile the code")
-    parser.add_argument("-r", "--run-klee", action="store_true", help="Run KLEE")
+    parser.add_argument("-k", "--run-klee", action="store_true", help="Run KLEE")
 
     return parser.parse_args()
 
@@ -54,7 +59,9 @@ def main():
         print("Compiling the code...")
         check_file(compile_commands)
         compile(compile_commands, source)
+        
     if do_run_klee:
+        
         print("TODO: Run KLEE...")
         
 

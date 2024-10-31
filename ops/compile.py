@@ -1,6 +1,6 @@
 import json
-import subprocess
 import shlex
+from common.command import run_command
 
 def get_compile_command(db_path, source):
     with open(db_path, "r") as file:
@@ -10,24 +10,6 @@ def get_compile_command(db_path, source):
             if source.name in file_path:
                 return entry
 
-def run_command(command, cwd):
-    try:
-        result = subprocess.run(
-            command,
-            text=True,
-            capture_output=True,
-            check=True,
-            cwd=cwd
-        )
-
-        print("Output:", result.stdout)
-        print("Error:", result.stderr)
-
-    except subprocess.CalledProcessError as e:
-        print(f"Command '{e.cmd}' failed with return code {e.returncode}")
-        print("Error output:", e.stderr)
-
-# Usage example
 def compile(compile_commands, source):
     entry = get_compile_command(compile_commands, source)
     command, directory = entry['command'], entry['directory']
