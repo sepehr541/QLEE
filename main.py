@@ -1,152 +1,65 @@
 import yaml
-from dataclasses import dataclass, field
-from typing import List, Dict, Any
 import argparse
 import os
+from pathlib import Path
 
-@dataclass
-class Variable:
-    type: str
-    name: str
-    pass_by_pointer: bool = False
-
-    @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> 'Variable':
-        return cls(
-            type=data['type'],
-            name=data['name'],
-            pass_by_pointer=data.get('pass-by-pointer', False)
-        )
-
-
-@dataclass
-class Constraint:
-    name: str
-    conditions: List[str]
-
-    @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> 'Constraint':
-        return cls(
-            name=data['name'],
-            conditions=data['constraint']
-        )
-
-@dataclass
-class Assignment:
-    name: str
-    value: str
-
-    @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> 'Assignment':
-        return cls(
-            name=data['name'],
-            value=data['value']
-        )
-
-
-@dataclass
-class Entrypoint:
-    name: str
-    args: List[Variable] = field(default_factory=list)
-
-    @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> 'Entrypoint':
-        # Parse each argument in 'args' as a Variable
-        args = [Variable.from_dict(arg) for arg in data['args']]
-        return cls(
-            name=data['name'],
-            args=args
-        )
-
-
-@dataclass
-class TargetConfig:
-    source: str
-    variables: Dict[str, Variable] = field(default_factory=dict)
-    constraints: Dict[str, Dict[str, Constraint]] = field(default_factory=dict)
-    assignments: Dict[str, Assignment] = field(default_factory=dict)
-    entrypoint: List[Entrypoint] = field(default_factory=list)
-
-    @classmethod
-    def from_yaml(cls, yaml_data: str) -> 'TargetConfig':
-        data = yaml.safe_load(yaml_data)
-
-        # Parse variables
-        variables = {k: Variable.from_dict(v) for k, v in data.get('variables', {}).items()}
-
-        # Parse constraints
-        constraints = [Constraint.from_dict(c) for c in data.get('constraints', [])]
-
-        # Parse assignments
-        assignments = [Assignment.from_dict(a) for a in data.get('assignments', [])]
-
-        # Parse entrypoint
-        entrypoints = [Entrypoint.from_dict(e) for e in data.get('entrypoint', [])]
-
-        return cls(
-            source=data['target']['source'],
-            variables=variables,
-            constraints=constraints,
-            assignments=assignments,
-            entrypoint=entrypoints
-        )
-
-    def generate_main_per_entrypoint(self, output):
-        fprint = lambda s: print(s, file=output)
-        fprint("// KLEE HARNESS")
-        # fprint("#include <klee/klee.h>\n")
-        fprint("void klee_make_symbolic(void *addr, size_t nbytes, const char *name);")
-        fprint("void klee_assume(uintptr_t condition);")
-
-        for entrypoint in self.entrypoint:
-            fprint(f"int main_{entrypoint.name}()")
-            fprint("{")
-            for arg in entrypoint.args:
-                fprint(f"\t{arg.type} {arg.name};")
-            for arg in entrypoint.args:
-                fprint(f"\tklee_make_symbolic(&{arg.name}, sizeof({arg.name}), \"{arg.name}\");")
-            for c in self.constraints:
-                for cond in c.conditions:
-                    fprint(f"\tklee_assume({c.name} {cond});")
-            for assignment in self.assignments:
-                fprint(f"\t{assignment.name} = {assignment.value};")
-            fprint(f"\t{entrypoint.name}({', '.join(('&' if arg.pass_by_pointer else '') + arg.name for arg in entrypoint.args)});")
-            fprint("\treturn 0;")
-            fprint("}\n")
-
-
+from spec import *
+from harness import add_harness
+from compile import compile
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="Parse paths for spec file and output file.")
+    parser = argparse.ArgumentParser(description="QLEE: wrapper for running KLEE on QEMU source files")
 
-    parser.add_argument(
-        "--spec",
-        type=str,
-        required=True,
-        help="Path to the specification file."
-    )
+    parser.add_argument("-s", "--spec-path", type=Path, required=True, help="Path to the specfile")
+    parser.add_argument("--qemu-root", type=Path, default=".", help="Path to the QEMU root directory file")
+    parser.add_argument("--compile-commands", type=Path, default="build/compile_commands.json", help="Path to compile_commands.jsonrelative to --qemu-root") 
 
-    parser.add_argument(
-        "--output",
-        type=str,
-        required=True,
-        help="Path to the output file."
-    )
+    parser.add_argument("-a", "--all", action="store_true", help="Execute all steps")
+    parser.add_argument("-H", "--add-harness", action="store_true", help="Add harness")
+    parser.add_argument("-c", "--compile", action="store_true", help="Compile the code")
+    parser.add_argument("-r", "--run-klee", action="store_true", help="Run KLEE")
 
-    args = parser.parse_args()
+    return parser.parse_args()
 
-    # Check if spec path exists and is a file
-    if not os.path.isfile(args.spec):
-        raise ValueError(f"Spec file does not exist: {args.spec}")
+def check_file(file_path):
+    if not os.path.isfile(file_path):
+        raise ValueError(f"File does not exist: {file_path}")
 
-    return args
+def check_dir(dir_path):
+    if not os.path.isdir(dir_path):
+        raise ValueError(f"Directory does not exist: {dir_path}")
 
-
-# Usage example
-if __name__ == "__main__":
+def main():
     args = parse_args()
-    with open(args.spec) as spec:
-        config = TargetConfig.from_yaml(spec)
-        with open(config.source, "a") as output:
-            config.generate_main_per_entrypoint(output)
+    spec_path, qemu_root = args.spec_path, args.qemu_root
+    
+    check_file(spec_path)
+    check_dir(qemu_root)
+
+    do_add_harness = args.all or args.add_harness
+    do_compile = args.all or args.compile
+    do_run_klee = args.all or args.run_klee
+    
+    spec_yaml = yaml.safe_load(open(spec_path))
+    spec_parsed = TargetConfig.from_yaml(spec_yaml)
+
+    source, compile_commands = qemu_root / spec_parsed.source, qemu_root / args.compile_commands
+    check_file(source)
+    
+    if do_add_harness:
+        print("Adding harness...")
+        add_harness(spec_parsed, source)
+
+    if do_compile:
+        print("Compiling the code...")
+        check_file(compile_commands)
+        compile(compile_commands, source)
+    if do_run_klee:
+        print("TODO: Run KLEE...")
+        
+
+
+if __name__ == "__main__":
+    main()
+
 
