@@ -2,27 +2,22 @@ KLEE_HARNESS = "// KLEE HARNESS"
 
 def generate_main_per_entrypoint(config, output):
         fprint = lambda s: print(s, file=output)
-        fprint(f"{KLEE_HARNESS}\n")
-        # fprint("#include <klee/klee.h>\n")
-        fprint("void klee_make_symbolic(void *addr, size_t nbytes, const char *name);")
-        fprint("void klee_assume(uintptr_t condition);")
+        fprint(f"{KLEE_HARNESS}\n"
+               + "void klee_make_symbolic(void *addr, size_t nbytes, const char *name);\n"
+               + "void klee_assume(uintptr_t condition);\n")
 
         for entrypoint in config.entrypoints:
-            fprint("__attribute__((used))")
-            fprint(f"static int main_{entrypoint.name}(void)")
-            fprint("{")
-            for arg in entrypoint.args:
-                fprint(f"\t{arg.type} {arg.name};")
-            for arg in entrypoint.args:
-                fprint(f"\tklee_make_symbolic(&{arg.name}, sizeof({arg.name}), \"{arg.name}\");")
-            for c in config.constraints:
-                for cond in c.conditions:
-                    fprint(f"\tklee_assume({c.name} {cond});")
-            for assignment in config.assignments:
-                fprint(f"\t{assignment.name} = {assignment.value};")
-            fprint(f"\t{entrypoint.name}({', '.join(('&' if arg.pass_by_pointer else '') + arg.name for arg in entrypoint.args)});")
-            fprint("\treturn 0;")
-            fprint("}\n")
+                main = (f"__attribute__((used))\n"
+                        + f"static int main_{entrypoint.name}(void)\n"
+                        + "{\n"
+                        + f"\n".join(f"\t{arg.type} {arg.name};" for arg in entrypoint.args) + "\n"
+                        + f"\n".join(f"\tklee_make_symbolic(&{arg.name}, sizeof({arg.name}), \"{arg.name}\");" for arg in entrypoint.args) + "\n"
+                        + f"\n".join(f"\tklee_assume({c.name} {cond});" for c in config.constraints for cond in c.conditions) + "\n"
+                        + f"\n".join(f"\t{assignment.name} = {assignment.value};" for assignment in config.assignments) + "\n"
+                        + f"\t{entrypoint.name}({', '.join(f'{arg.cast}{arg.addressof}{arg.name}' for arg in entrypoint.args)});\n" 
+                        + f"\treturn 0;\n"
+                        + "}\n")
+                fprint(main)
 
 def truncate_file_at_match(filename, match_text):
     with open(filename, "r+") as file:

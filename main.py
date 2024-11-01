@@ -48,6 +48,8 @@ def main():
 
     spec_parsed = TargetConfig.from_yaml(yaml.safe_load(open(spec_path)))
 
+    print(spec_parsed)
+    
     source = qemu_root / spec_parsed.source
     check_file(source)
 
@@ -63,7 +65,9 @@ def main():
 
     if do_compile:
         print("Compiling the code...")
-        compile_to_ir(entry)
+        result = compile_to_ir(entry)
+        if result == -1:
+            return
 
     if do_run_klee:
         print("Run KLEE...")

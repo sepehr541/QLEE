@@ -12,9 +12,9 @@ def run_command(command, cwd):
 
         print("Output:", result.stdout)
         print("Error:", result.stderr)
-
+        return result
     except subprocess.CalledProcessError as e:
-        print(f"Command '{e.cmd}' failed with return code {e.returncode}")
-        print("Error output:", e.stderr)
-
+        print(f"Command '{e.cmd[0]}' failed with return code {e.returncode}")
+        print(f"Error output: {e.stderr}")
+        return -1
 

@@ -7,4 +7,4 @@ def compile_to_ir(cc_entry):
     command_list.insert(1, f"-emit-llvm")
     command_list.insert(1, f"-S")
 
-    run_command(command_list, directory)
+    return run_command(command_list, directory)

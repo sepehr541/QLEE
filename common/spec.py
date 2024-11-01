@@ -7,14 +7,16 @@ from pathlib import Path
 class Variable:
     type: str
     name: str
-    pass_by_pointer: bool = False
+    addressof: str = ''
+    cast: str = ''
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> 'Variable':
         return cls(
             type=data['type'],
             name=data['name'],
-            pass_by_pointer=data.get('pass-by-pointer', False)
+            addressof='&' if data.get('pass-by-pointer', False) else '',
+            cast=data.get('cast', '')
         )
 
 

@@ -37,4 +37,14 @@ entrypoint:
     args: [*state, *offset, *size]
   - name: "pl011_write"
     args: [*state, *offset, *value, *size]
+  - name: "pl011_get_baudrate"
+    args: [*state]
+  - name: "pl011_can_receive"
+    args: [*state]
+  - name: "pl011_loopback_mdmctrl"
+    args: [*state]
+  - name: "pl011_reset"
+    args:
+      - << : *state
+        cast: "(DeviceState*)"
 
