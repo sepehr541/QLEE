@@ -1,0 +1,24 @@
+target:
+  source: "hw/char/serial.c"
+
+variables:
+  state: &state
+    type: "struct SerialState"
+    name: "state"
+    pass-by-pointer: true
+  offset: &offset
+    type: "hwaddr"
+    name: "offset"
+  size: &size
+    type: "unsigned"
+    name: "size"
+  value: &value
+    type: "uint64_t"
+    name: "value"
+
+entrypoint:
+  - name: "serial_ioport_read"
+    args: [*state, *offset, *size]
+  - name: "serial_ioport_write"
+    args: [*state, *offset, *value, *size]
+

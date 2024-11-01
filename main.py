@@ -48,25 +48,26 @@ def main():
 
     spec_parsed = TargetConfig.from_yaml(yaml.safe_load(open(spec_path)))
 
-    print(spec_parsed)
+    source_relative = spec_parsed.source
+    source_absolute = qemu_root / source_relative
+    check_file(source_absolute)
+
+    entry = get_entry(compile_commands, source_relative)
+    print(entry.output)
     
-    source = qemu_root / spec_parsed.source
-    check_file(source)
-
-    entry = get_entry(compile_commands, source)
-
     do_add_harness = args.all or args.add_harness
     do_compile = args.all or args.compile
     do_run_klee = args.all or args.run_klee
 
     if do_add_harness:
         print("Adding harness...")
-        add_harness(spec_parsed, source)
+        add_harness(spec_parsed, source_absolute)
 
     if do_compile:
         print("Compiling the code...")
         result = compile_to_ir(entry)
         if result == -1:
+            print("Failed to compile to IR")
             return
 
     if do_run_klee:

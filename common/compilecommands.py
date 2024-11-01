@@ -19,7 +19,7 @@ class CompileCommandEntry:
 def get_entry(db_path, source):
     with open(db_path, "r") as file:
         data = json.load(file)
-        entry = next((entry for entry in data if source.name in entry["file"]), None)
+        entry = next((entry for entry in data if str(source) in entry["file"]), None)
         if entry:
             return CompileCommandEntry.from_json(entry)
         else:
