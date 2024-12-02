@@ -18,12 +18,12 @@ variables:
 
 
 constraints:
-  - name: "offset"
-    constraint:
-      - "< 8"
-  - name: "size"
-    constraint:
-      - "== 1"
+ - name: "offset"
+   constraint:
+     - "< 8"
+ - name: "size"
+   constraint:
+     - "== 1"
 
 entrypoint:
   - name: "serial_ioport_read"

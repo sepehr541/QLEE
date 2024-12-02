@@ -16,6 +16,15 @@ variables:
     type: "uint64_t"
     name: "value"
 
+
+constraints:
+ - name: "value"
+   constraint:
+     - "<= 0xff"
+ - name: "size"
+   constraint:
+     - "== 1"
+
 entrypoint:
   - name: "avr_usart_read"
     args: [*state, *offset, *size]
