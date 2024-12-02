@@ -1,0 +1,8 @@
+array offset[8] : w32 -> w8 = symbolic
+array size[4] : w32 -> w8 = symbolic
+(query [(Eq false
+             (And (Ult (ReadLSB w64 0 offset)
+                       8)
+                  (Eq 1
+                      (ReadLSB w32 0 size))))]
+        false)

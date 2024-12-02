@@ -1,0 +1,11 @@
+KLEE: Using STP solver backend
+KLEE: SAT solver: CryptoMiniSat
+KLEE: Deterministic allocator: Using quarantine queue size 8
+KLEE: Deterministic allocator: globals (start-address=0x7fac53eef000 size=10 GiB)
+KLEE: Deterministic allocator: constants (start-address=0x7fa9d3eef000 size=10 GiB)
+KLEE: Deterministic allocator: heap (start-address=0x7ea9d3eef000 size=1024 GiB)
+KLEE: Deterministic allocator: stack (start-address=0x7e89d3eef000 size=128 GiB)
+KLEE: ERROR: ../hw/char/avr_usart.c:160: ASSERTION FAIL: (value & 0xff) == value
+KLEE: NOTE: now ignoring this error at this location
+KLEE: ERROR: ../hw/char/avr_usart.c:161: ASSERTION FAIL: size == 1
+KLEE: NOTE: now ignoring this error at this location

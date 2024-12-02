@@ -1,0 +1,8 @@
+Error: ASSERTION FAIL: (value & 0xff) == value
+File: ../hw/char/avr_usart.c
+Line: 160
+assembly.ll line: 278
+State: 2
+Stack: 
+	#000000278 in avr_usart_write(139194855780352, symbolic, symbolic, symbolic) at ../hw/char/avr_usart.c:160
+	#100000260 in main_avr_usart_write() at ../hw/char/avr_usart.c:354

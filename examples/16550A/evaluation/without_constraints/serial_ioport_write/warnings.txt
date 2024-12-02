@@ -1,0 +1,1 @@
+KLEE: WARNING ONCE: silently concretizing (reason: floating point) expression (ReadLSB w32 252 state) to value 0 (../hw/char/serial.c:175)

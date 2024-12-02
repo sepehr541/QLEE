@@ -1,0 +1,9 @@
+KLEE: Using STP solver backend
+KLEE: SAT solver: CryptoMiniSat
+KLEE: Deterministic allocator: Using quarantine queue size 8
+KLEE: Deterministic allocator: globals (start-address=0x7f361a398000 size=10 GiB)
+KLEE: Deterministic allocator: constants (start-address=0x7f339a398000 size=10 GiB)
+KLEE: Deterministic allocator: heap (start-address=0x7e339a398000 size=1024 GiB)
+KLEE: Deterministic allocator: stack (start-address=0x7e139a398000 size=128 GiB)
+KLEE: ERROR: ../hw/char/pl011.c:647: memory error: null page access
+KLEE: NOTE: now ignoring this error at this location

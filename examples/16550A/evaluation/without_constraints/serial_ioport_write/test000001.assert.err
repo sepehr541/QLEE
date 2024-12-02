@@ -1,0 +1,8 @@
+Error: ASSERTION FAIL: size == 1 && addr < 8
+File: ../hw/char/serial.c
+Line: 337
+assembly.ll line: 640
+State: 2
+Stack: 
+	#000000640 in serial_ioport_write(138766704017408, symbolic, symbolic, symbolic) at ../hw/char/serial.c:337
+	#100001144 in main_serial_ioport_write() at ../hw/char/serial.c:1030

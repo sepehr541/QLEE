@@ -1,0 +1,8 @@
+Error: ASSERTION FAIL: size == 1
+File: ../hw/char/avr_usart.c
+Line: 161
+assembly.ll line: 286
+State: 3
+Stack: 
+	#000000286 in avr_usart_write(139194855780352, symbolic, symbolic, symbolic) at ../hw/char/avr_usart.c:161
+	#100000260 in main_avr_usart_write() at ../hw/char/avr_usart.c:354

@@ -1,0 +1,23 @@
+klee --link-llvm-lib=stubs.ll --entry-point=main_serial_ioport_write --output-dir=evaluation/2024-12-02_10-08-58/serial_ioport_write /home/snoora/qemu/build/libcommon.a.p/hw_char_serial.c.o
+PID: 3850418
+Using monotonic steady clock with 1/1000000000s resolution
+Started: 2024-12-02 10:08:59
+BEGIN searcher description
+<InterleavedSearcher> containing 2 searchers:
+RandomPathSearcher
+WeightedRandomSearcher::CoveringNew
+</InterleavedSearcher>
+END searcher description
+Finished: 2024-12-02 10:09:20
+Elapsed: 00:00:21
+KLEE: done: explored paths = 1648
+KLEE: done: avg. constructs per query = 130
+KLEE: done: total queries = 1269
+KLEE: done: valid queries = 1085
+KLEE: done: invalid queries = 184
+KLEE: done: query cex = 1269
+
+KLEE: done: total instructions = 619335
+KLEE: done: completed paths = 1389
+KLEE: done: partially completed paths = 259
+KLEE: done: generated tests = 1538

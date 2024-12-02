@@ -1,0 +1,11 @@
+Error: memory error: null page access
+File: ../hw/char/pl011.c
+Line: 647
+assembly.ll line: 1119
+State: 1
+Stack: 
+	#000001119 in main_pl011_reset() at ../hw/char/pl011.c:647
+Info: 
+	address: 1104
+	next: object at 138687081447424 of size 1344
+		MO175[1344] allocated at main_pl011_reset():  %1 = alloca %struct.PL011State, align 16

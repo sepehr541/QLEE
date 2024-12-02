@@ -1,0 +1,23 @@
+klee --link-llvm-lib=stubs.ll --entry-point=main_pl011_write --output-dir=evaluation/2024-12-01_22-59-47/pl011_write /home/snoora/qemu/build/libcommon.a.p/hw_char_pl011.c.o
+PID: 3740931
+Using monotonic steady clock with 1/1000000000s resolution
+Started: 2024-12-01 22:59:47
+BEGIN searcher description
+<InterleavedSearcher> containing 2 searchers:
+RandomPathSearcher
+WeightedRandomSearcher::CoveringNew
+</InterleavedSearcher>
+END searcher description
+Finished: 2024-12-01 22:59:47
+Elapsed: 00:00:00
+KLEE: done: explored paths = 49
+KLEE: done: avg. constructs per query = 68
+KLEE: done: total queries = 83
+KLEE: done: valid queries = 27
+KLEE: done: invalid queries = 56
+KLEE: done: query cex = 83
+
+KLEE: done: total instructions = 4013
+KLEE: done: completed paths = 49
+KLEE: done: partially completed paths = 0
+KLEE: done: generated tests = 49

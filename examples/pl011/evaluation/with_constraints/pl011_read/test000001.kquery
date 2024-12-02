@@ -1,0 +1,23 @@
+array offset[8] : w32 -> w8 = symbolic
+array state[1344] : w32 -> w8 = symbolic
+(query [(Ult (ReadLSB w32 1188 state)
+              64)
+         (Ult (ReadLSB w32 1184 state)
+              65536)
+         (Slt 4294967295
+              N0:(ReadLSB w32 1196 state))
+         (Slt N0 16)
+         (Or (Eq 1024
+                 N1:(LShr w64 N2:(ReadLSB w64 0 offset)
+                              2))
+             (Or (Eq 1023 N1)
+                 (Or (Eq 1022 N1)
+                     (Or (Eq 1021 N1)
+                         (Or (Eq 1020 N1)
+                             (Or (Eq 1019 N1)
+                                 (Or (Eq 1018 N1)
+                                     (Or (Eq 1017 N1) (Eq 1016 N1)))))))))
+         (Eq false
+             (Ult (LShr w64 (Add w64 18446744073709547552 N2) 2)
+                  8))]
+        false)

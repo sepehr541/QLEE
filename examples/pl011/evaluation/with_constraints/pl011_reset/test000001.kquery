@@ -1,0 +1,9 @@
+array state[1344] : w32 -> w8 = symbolic
+(query [(Ult (ReadLSB w32 1188 state)
+              64)
+         (Ult (ReadLSB w32 1184 state)
+              65536)
+         (Slt 4294967295
+              N0:(ReadLSB w32 1196 state))
+         (Slt N0 16)]
+        false)

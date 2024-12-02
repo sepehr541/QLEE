@@ -1,0 +1,17 @@
+Error: memory error: out of bound pointer
+File: ../hw/char/pl011.c
+Line: 319
+assembly.ll line: 445
+State: 137
+Stack: 
+	#000000445 in pl011_read(138589959991296, symbolic, 0) at ../hw/char/pl011.c:319
+	#100000211 in main_pl011_read() at ../hw/char/pl011.c:716
+Info: 
+	address: (Add w64 (ReadLSB w64 1328 state)
+          (LShr w64 (Add w64 18446744073709547552
+                             (ReadLSB w64 0 offset))
+                    2))
+	example: 4
+	range: [0, 18446744073709551615]
+	next: object at 138538420383744 of size 4
+		MO177[4] allocated at main_pl011_read():  %3 = alloca i32, align 4

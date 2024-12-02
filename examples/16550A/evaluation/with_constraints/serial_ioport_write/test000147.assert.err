@@ -1,0 +1,9 @@
+Error: ASSERTION FAIL: s->watch_tag == 0
+File: ../hw/char/serial.c
+Line: 264
+assembly.ll line: 1434
+State: 626
+Stack: 
+	#000001434 in serial_xmit(138691779440640) at ../hw/char/serial.c:264
+	#100000783 in serial_ioport_write(138691779440640, symbolic, symbolic, symbolic) at ../hw/char/serial.c:359
+	#200001166 in main_serial_ioport_write() at ../hw/char/serial.c:1032

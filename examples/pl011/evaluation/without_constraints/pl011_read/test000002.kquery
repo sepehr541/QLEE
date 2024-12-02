@@ -1,0 +1,11 @@
+array offset[8] : w32 -> w8 = symbolic
+array state[1344] : w32 -> w8 = symbolic
+(query [(Eq 0
+             (LShr w64 (ReadLSB w64 0 offset)
+                       2))
+         (Eq false
+             (Ult (Add w64 1116
+                           (Mul w64 4
+                                    (SExt w64 (ReadLSB w32 1196 state))))
+                  1341))]
+        false)
