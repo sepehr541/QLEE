@@ -1,13 +1,13 @@
 import subprocess
 
-def run_command(command, cwd):
+def run_command(command, cwd, stdout=None):
     try:
         result = subprocess.run(
             command,
             text=True,
-            capture_output=True,
             check=True,
-            cwd=cwd
+            cwd=cwd,
+            stdout=stdout
         )
 
         print("Output:", result.stdout)

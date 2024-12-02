@@ -1,9 +1,9 @@
 target:
-  source: "hw/char/serial.c"
+  source: "hw/char/avr_usart.c"
 
 variables:
   state: &state
-    type: "struct SerialState"
+    type: "struct AVRUsartState"
     name: "state"
     pass-by-pointer: true
   offset: &offset
@@ -16,18 +16,8 @@ variables:
     type: "uint64_t"
     name: "value"
 
-
-constraints:
-  - name: "offset"
-    constraint:
-      - "< 8"
-  - name: "size"
-    constraint:
-      - "== 1"
-
 entrypoint:
-  - name: "serial_ioport_read"
+  - name: "avr_usart_read"
     args: [*state, *offset, *size]
-  - name: "serial_ioport_write"
+  - name: "avr_usart_write"
     args: [*state, *offset, *value, *size]
-
