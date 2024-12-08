@@ -13,7 +13,7 @@ def generate_main_per_entrypoint(config, output):
                         + "{\n"
                         + f"\n".join(f"\t{arg.type} {arg.name};" for arg in entrypoint.args) + "\n"
                         + f"\n".join(f"\tklee_make_symbolic(&{arg.name}, sizeof({arg.name}), \"{arg.name}\");" for arg in entrypoint.args) + "\n"
-                        + f"\n".join(f"\tklee_assume({c.name} {cond});" for c in config.constraints if c.name in arg_names for cond in c.conditions) + "\n"
+                        + f"\n".join(f"\tklee_assume({c.name} {cond});" for c in config.constraints if c.name.split('.')[0] in arg_names for cond in c.conditions) + "\n"
                         + f"\n".join(f"\t{assignment.name} = {assignment.value};" for assignment in config.assignments) + "\n"
                         + f"\t{entrypoint.name}({', '.join(f'{arg.cast}{arg.addressof}{arg.name}' for arg in entrypoint.args)});\n" 
                         + f"\treturn 0;\n"
