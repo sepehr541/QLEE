@@ -2,7 +2,7 @@
 Fuzzing QEMU's emulated devices via KLEE (Symbolic Execution Engine)
 
 ## Design
-Please read the [presentation](https://github.com/sepehr541/QLEE/blob/main/QLEE.pdf).
+Please read the [presentation](https://github.com/sepehr541/QLEE/blob/main/QLEE.pdf) and the [project report](https://github.com/sepehr541/QLEE/blob/main/project-report.pdf).
 
 ## Building
 Before using QLEE, you need to build the AutoStub executable under  `autostub/`.
